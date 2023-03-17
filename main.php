@@ -10,22 +10,42 @@
 
 Дерево{
 	Уникальный номер(i++)
-	Вид(груша, яблоня)
+	view_fruit(груша, яблоня)
 	Плод(груша, яблоко)
 	Урожайность
 		груш (0-20)
-		яблок (40-50)
+		apple_fruit (40-50)
 
 }
 
-Плод{
-	масса
-		груши (150 - 180)
-		яблок (130 - 170)
+fruit{
+	тип view
+	масса weight
+		груши pear (150 - 180)
+		яблока apple (130 - 170)
 }
 
 Система должна добавить деревья сад;
 Произвести сбор продукции со всех деревьев;
 Вывести на экран общее кол-во собранных фруктов каждого вида.
-
 */
+
+class fruit{
+	private $view; //тип
+	private $weight; //масса
+
+    public function __construct($view_fruit)
+    {
+    	$weight = 0;
+    	$view = "none"
+	   	if ($view_fruit == 'pear') {
+			$weight = rand(150, 180);
+			$view = $view_fruit
+	    }else{
+	    	if($view_fruit == 'apple'){
+				$weight = rand(130, 170);
+				$view = $view_fruit
+			}
+	    }
+    }
+}
