@@ -16,9 +16,9 @@
 	Урожайность harvest_n
 		pear_harvest_n (0-20)
 		apple_harvest_n (40-50)
-			f собрать урожай с дерева (получить один фрукт) returnFruit
-			f получить количество фруктов get_n_Fruit
-
+			f собрать урожай с дерева (получить один фрукт) returnFruit()
+			f получить количество фруктов get_n_Fruit()
+			f изменить id дерева setId
 }
 
 fruit{
@@ -27,7 +27,10 @@ fruit{
 		груши pear (150 - 180)
 		яблока apple (130 - 170)
 			f получить вес фрукта 	getWeight()
+			f получить тип фрукта 	getView()
 }
+
+
 
 Система должна добавить деревья сад;  
 	$gardens = new garden();
@@ -46,12 +49,9 @@ fruit{
 	$gardens->addTree('pear');
 	$gardens->addFruitInBasket();
 	$gardens->getInfoBasket();
-
 */
 
-
 class garden{
-	
 	private $tree_mass = [];
 	private $basket = [];
 
@@ -61,28 +61,22 @@ class garden{
 		$this->basket = [];
 	}
 
-	public function addTree($view_fruit)
+	public function addTree($view_fruit)//echo "создано дерево<br>";
 	{
-		echo "создано дерево<br>";
 		array_push($this->tree_mass, new tree($view_fruit)); 
 	}
 
-	public function addFruitInBasket()
+	public function addFruitInBasket()//echo "перемещение фруктов в карзину<br>";
 	{
-		echo "перемещение фруктов в карзину<br>";
 		for ($i=0; $i < count($this->tree_mass); $i++) { 
-			//print_r($this->tree_mass[0]->getWeight);
 			while (0 < $this->tree_mass[$i]->get_n_Fruit()) {
 				array_push($this->basket, $this->tree_mass[$i]->returnFruit()); 
 			}
 		}
 	}
 
-	public function getInfoBasket(){	
-		echo "подсчет собраных всех фруктов";
+	public function getInfoBasket(){	//echo "подсчет собраных всех фруктов";
 		$massaInFrytsBasket = [];
-
-		print_r($massaInFrytsBasket);
 		for ($i=0; $i < count($this->basket); $i++) { 
 			if ($this->basket[$i]->getView() == 'pear') {
 				$massaInFrytsBasket['pear']['n'] += 1;
@@ -91,13 +85,11 @@ class garden{
 		    	if($this->basket[$i]->getView() == 'apple'){
 					$massaInFrytsBasket['apple']['n'] += 1;
 					$massaInFrytsBasket['apple']['mass'] += $this->basket[$i]->getWeight();
-				}else{
-					$this->harvest_n = 0;
 				}
 		    }
 		}
-		echo "Всего собрано ".$massaInFrytsBasket['pear']['n']+$massaInFrytsBasket['apple']['n']." фруктов <br>";
-		echo "собрано грушь ".$massaInFrytsBasket['pear']['n']." шт. ".($massaInFrytsBasket['pear']['mass']/1000)." кг <br>";
+		echo "Всего собрано ".($massaInFrytsBasket['pear']['n']+$massaInFrytsBasket['apple']['n'])." фруктов <br>";
+		echo "собрано груш ".$massaInFrytsBasket['pear']['n']." шт. ".($massaInFrytsBasket['pear']['mass']/1000)." кг <br>";
 		echo "собрано яблок ".$massaInFrytsBasket['apple']['n']." шт. ".($massaInFrytsBasket['apple']['mass']/1000)." кг <br>";
 	}
 }
@@ -105,23 +97,19 @@ class garden{
 class tree{
 	private $id; //Уникальный номер
 	private $view_fruit; //тип дерева
-	private $harvest_n; //урожайность
 	private $fruit_mass = []; //массив фруктов
 
-	public function __construct($view_fruit)
-    {
-    	$this->id = 1; //																	костыль
+	public function __construct($view_fruit){
+    	$this->id = microtime(true); 
+    	usleep(2); 
     	$this->view_fruit = $view_fruit;
     	if ($view_fruit == 'pear') {
-			$this->harvest_n = rand(0, 20);
-	    }else{
-	    	if($view_fruit == 'apple'){
-				$this->harvest_n = rand(40, 50);
-			}else{
-				$this->harvest_n = 0;
-			}
-	    }
-    	for ($i=0; $i < $this->harvest_n; $i++) { 
+			$harvest_n = rand(0, 20);
+		}
+    	if($view_fruit == 'apple'){
+			$harvest_n = rand(40, 50);
+		}
+    	for ($i=0; $i < $harvest_n; $i++) { 
     		array_push($this->fruit_mass, new fruit($view_fruit)); 
     	}
     }
@@ -130,24 +118,16 @@ class tree{
     	return count($this->fruit_mass);
     }
 
+    public function setId($id) {//echo "всего в корзине";
+    	$this->id = $id;
+    }
+
     public function returnFruit() {	//echo "получить один фрукт";
 		if (count($this->fruit_mass) > 0) {
 			$s = array_pop($this->fruit_mass);
 			return $s;
-    	}else{
-    		echo "весь урожай c дерева собран";
     	}
     }
-
-
-    public function info() {
-    	for ($i=0; $i < $this->harvest_n; $i++) { 
-    		$this->fruit_mass[$i]->getWeight();
-    	}
-	}
-
-
-
 }
 
 class fruit{
@@ -159,35 +139,29 @@ class fruit{
 	   	if ($view_fruit == 'pear') {
 			$this->weight = rand(150, 180);
 			$this->view = $view_fruit;
-	    }else{
-	    	if($view_fruit == 'apple'){
-				$this->weight = rand(130, 170);
-				$this->view = $view_fruit;
-			}else{
-				$this->weight = 0;
-    			$this->view = "none";
-			}
 	    }
+    	if($view_fruit == 'apple'){
+			$this->weight = rand(130, 170);
+			$this->view = $view_fruit;
+		}
     }
 
     public function getWeight() {
-    	/*echo $this->weight;  
-    	echo '<br>';*/
     	return $this->weight;
     }
 
     public function getView() {
-    	// echo $this->view;  
-    	// echo '<br>';
     	return $this->view;
     }
-
-
 }
+
 $gardens = new garden();
-$gardens->addTree('apple');
-$gardens->addTree('pear');
+for ($i=0; $i < 10; $i++) { 
+	$gardens->addTree('apple');
+}
+for ($i=0; $i < 15; $i++) { 
+	$gardens->addTree('pear');
+}
 $gardens->addFruitInBasket();
 $gardens->getInfoBasket();
-
 ?>
