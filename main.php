@@ -1,10 +1,10 @@
 <?php
 /* структура
 Классы
-сад{
+сад garden{
 	Деревья(10 яблонь, 15 груш)
-			f добавить дерево
-			f Собирать плоды со всех деревьев, добавленных в сад
+			f добавить дерево 	addTree
+			f Собирать плоды со всех деревьев, добавленных в сад 	basket
 			f Подсчитывать общее кол-во собранных плодов для каждого типа деревьев
 			f *Необязательно к выполнению: система может посчитать общий вес собранных фруктов каждого вида 
 }
@@ -16,7 +16,8 @@
 	Урожайность harvest_n
 		pear_harvest_n (0-20)
 		apple_harvest_n (40-50)
-
+			f собрать урожай с дерева (получить один фрукт) returnFruit
+			f получить количество фруктов get_n_Fruit
 
 }
 
@@ -32,13 +33,59 @@ fruit{
 Произвести сбор продукции со всех деревьев;
 Вывести на экран общее кол-во собранных фруктов каждого вида.
 */
-class tree{
+$a1 = "apple";
+$a2 = "pear";
 
+class garden{
+	private $tree_mass = [];
+	private $basket = [];
+
+	public function __construct()
+	{
+		$this->tree_mass = [];
+		$this->basket = [];
+	}
+
+	public function addTree($view_fruit)
+	{
+		echo "создано дерево<br>";
+		array_push($this->tree_mass, new tree($view_fruit)); 
+		//print_r( $this->tree_mass);
+	}
+
+	public function addFruitInBasket()
+	{
+		echo "перемещение фруктов в карзину<br>";
+		for ($i=0; $i < count($this->tree_mass); $i++) { 
+			print_r($this->tree_mass[0]->getWeight);
+			while (0 < $this->tree_mass[$i]->get_n_Fruit()) {
+				array_push($this->basket, $this->tree_mass[$i]->returnFruit()); 
+			}
+		}
+		//print_r($this->basket);
+
+	}
+
+	public function getInfoBasket(){	
+		echo "подсчет собраных всех фруктов";
+		for ($i=0; $i < count($this->basket); $i++) { 
+			echo $this->basket[$i]->getWeight;
+		}
+		print_r($this->basket);
+	}
+}
+
+$gardens = new garden();
+$gardens->addTree('apple');
+
+$gardens->addFruitInBasket();
+$gardens->getInfoBasket();
+
+class tree{
 	private $id; //Уникальный номер
 	private $view_fruit; //тип дерева
 	private $harvest_n; //урожайность
 	private $fruit_mass = []; //массив фруктов
-	
 
 	public function __construct($view_fruit)
     {
@@ -58,8 +105,25 @@ class tree{
     	}
     }
 
-    
-    
+    public function get_n_Fruit() {
+    	//echo "всего в корзине";
+    	echo count($this->fruit_mass);
+    	return count($this->fruit_mass);
+    }
+
+
+    public function returnFruit() {
+    	//echo "получить один фрукт";
+		if (count($this->fruit_mass) > 0) {
+			$s = array_pop($this->fruit_mass);
+			//print_r($s);
+			return $s;
+    	}else{
+    		echo "весь урожай c дерева собран";
+    	}
+    }
+
+
     public function info() {
     	for ($i=0; $i < $this->harvest_n; $i++) { 
     		$this->fruit_mass[$i]->getWeight();
@@ -68,8 +132,10 @@ class tree{
 
 }
 
+//тест
+/*
 $tree_test = new tree('apple');
-$tree_test->info();
+$tree_test->info();*/
 
 
 class fruit{
@@ -100,10 +166,11 @@ class fruit{
 
 
 }
-
+//тест
+/*
 $fruits1 = new fruit('apple');
 $fruits2 = new fruit('pear');
 $fruits1->getWeight();
-$fruits2->getWeight();
+$fruits2->getWeight();*/
 
 ?>
