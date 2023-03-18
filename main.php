@@ -5,8 +5,8 @@
 	Деревья(10 яблонь, 15 груш)
 			f добавить дерево 	addTree
 			f Собирать плоды со всех деревьев, добавленных в сад 	basket
-			f Подсчитывать общее кол-во собранных плодов для каждого типа деревьев
-			f *Необязательно к выполнению: система может посчитать общий вес собранных фруктов каждого вида 
+			f Подсчитывать общее кол-во собранных плодов для каждого типа деревьев getInfoBasket
+			f *Необязательно к выполнению: система может посчитать общий вес собранных фруктов каждого вида getInfoBasket
 }
 
 Дерево tree{
@@ -29,14 +29,29 @@ fruit{
 			f получить вес фрукта 	getWeight()
 }
 
-Система должна добавить деревья сад;
+Система должна добавить деревья сад;  
+	$gardens = new garden();
+	$gardens->addTree('apple');
+	$gardens->addTree('pear');
+
 Произвести сбор продукции со всех деревьев;
+	$gardens = new garden();
+	$gardens->addTree('apple');
+	$gardens->addTree('pear');
+	$gardens->addFruitInBasket(); //(перемещаем фрукты с дерева в "корзину")
+
 Вывести на экран общее кол-во собранных фруктов каждого вида.
+	$gardens = new garden();
+	$gardens->addTree('apple');
+	$gardens->addTree('pear');
+	$gardens->addFruitInBasket();
+	$gardens->getInfoBasket();
+
 */
-$a1 = "apple";
-$a2 = "pear";
+
 
 class garden{
+	
 	private $tree_mass = [];
 	private $basket = [];
 
@@ -50,36 +65,42 @@ class garden{
 	{
 		echo "создано дерево<br>";
 		array_push($this->tree_mass, new tree($view_fruit)); 
-		//print_r( $this->tree_mass);
 	}
 
 	public function addFruitInBasket()
 	{
 		echo "перемещение фруктов в карзину<br>";
 		for ($i=0; $i < count($this->tree_mass); $i++) { 
-			print_r($this->tree_mass[0]->getWeight);
+			//print_r($this->tree_mass[0]->getWeight);
 			while (0 < $this->tree_mass[$i]->get_n_Fruit()) {
 				array_push($this->basket, $this->tree_mass[$i]->returnFruit()); 
 			}
 		}
-		//print_r($this->basket);
-
 	}
 
 	public function getInfoBasket(){	
 		echo "подсчет собраных всех фруктов";
+		$massaInFrytsBasket = [];
+
+		print_r($massaInFrytsBasket);
 		for ($i=0; $i < count($this->basket); $i++) { 
-			echo $this->basket[$i]->getWeight;
+			if ($this->basket[$i]->getView() == 'pear') {
+				$massaInFrytsBasket['pear']['n'] += 1;
+				$massaInFrytsBasket['pear']['mass'] += $this->basket[$i]->getWeight();
+		    }else{
+		    	if($this->basket[$i]->getView() == 'apple'){
+					$massaInFrytsBasket['apple']['n'] += 1;
+					$massaInFrytsBasket['apple']['mass'] += $this->basket[$i]->getWeight();
+				}else{
+					$this->harvest_n = 0;
+				}
+		    }
 		}
-		print_r($this->basket);
+		echo "Всего собрано ".$massaInFrytsBasket['pear']['n']+$massaInFrytsBasket['apple']['n']." фруктов <br>";
+		echo "собрано грушь ".$massaInFrytsBasket['pear']['n']." шт. ".($massaInFrytsBasket['pear']['mass']/1000)." кг <br>";
+		echo "собрано яблок ".$massaInFrytsBasket['apple']['n']." шт. ".($massaInFrytsBasket['apple']['mass']/1000)." кг <br>";
 	}
 }
-
-$gardens = new garden();
-$gardens->addTree('apple');
-
-$gardens->addFruitInBasket();
-$gardens->getInfoBasket();
 
 class tree{
 	private $id; //Уникальный номер
@@ -105,18 +126,13 @@ class tree{
     	}
     }
 
-    public function get_n_Fruit() {
-    	//echo "всего в корзине";
-    	echo count($this->fruit_mass);
+    public function get_n_Fruit() {//echo "всего в корзине";
     	return count($this->fruit_mass);
     }
 
-
-    public function returnFruit() {
-    	//echo "получить один фрукт";
+    public function returnFruit() {	//echo "получить один фрукт";
 		if (count($this->fruit_mass) > 0) {
 			$s = array_pop($this->fruit_mass);
-			//print_r($s);
 			return $s;
     	}else{
     		echo "весь урожай c дерева собран";
@@ -130,13 +146,9 @@ class tree{
     	}
 	}
 
+
+
 }
-
-//тест
-/*
-$tree_test = new tree('apple');
-$tree_test->info();*/
-
 
 class fruit{
 	private $view; //тип
@@ -159,18 +171,23 @@ class fruit{
     }
 
     public function getWeight() {
-    	echo $this->weight;  
-    	echo '<br>';
+    	/*echo $this->weight;  
+    	echo '<br>';*/
     	return $this->weight;
+    }
+
+    public function getView() {
+    	// echo $this->view;  
+    	// echo '<br>';
+    	return $this->view;
     }
 
 
 }
-//тест
-/*
-$fruits1 = new fruit('apple');
-$fruits2 = new fruit('pear');
-$fruits1->getWeight();
-$fruits2->getWeight();*/
+$gardens = new garden();
+$gardens->addTree('apple');
+$gardens->addTree('pear');
+$gardens->addFruitInBasket();
+$gardens->getInfoBasket();
 
 ?>
